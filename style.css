@@ -1,0 +1,65 @@
+body {
+    text-align: center;
+    background-color: #fce3ba;
+}
+
+h1 {
+    --color1: #43a685ff;
+    --color2: #ff4d71ff;
+    font-family: "Open Sans", sans-serif;
+    text-align: center;
+    font-size: 46px;
+    background: repeating-linear-gradient(
+      45deg,
+      var(--color1),
+      var(--color1) 30px,
+      var(--color2) 30px,
+      var(--color2) 60px
+    );
+    background-clip: text;
+    color: transparent;
+    -webkit-background-clip: text;
+    animation: 40s linear 0s infinite move;
+  }
+  
+  @keyframes move {
+    from {
+      background-position: 0px;
+    }
+    to {
+      background-position: 1000px;
+    }
+  }
+  
+
+main {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-left: 5px;
+    margin-right: 5px;
+    padding-bottom: 10px;
+}
+
+/* Estilos para los círculos */
+.circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #333;
+    /* Estilos navideños */
+    position: relative;
+    border:none;
+}
+
+img {
+    width: 35x;
+    height: 35px;
+}
+
+p {
+    color: #333;
+}
+
+
