@@ -37,6 +37,10 @@ document.addEventListener('DOMContentLoaded', async function () {
             switchPatito(i)
         })
     }
+    
+    const restantes = patitos.filter(duck => !duck.caught)
+    document.getElementById("restante").innerText = "Te quedan " + restantes.length
+    document.getElementById("llevas").innerText = "Llevas " + (patitos.length - restantes.length)
 });
 
 async function switchPatito(index) {
