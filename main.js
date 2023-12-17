@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             switchPatito(i)
         })
     }
-    
+
     const restantes = patitos.filter(duck => !duck.caught)
     document.getElementById("restante").innerText = "Te quedan " + restantes.length
     document.getElementById("llevas").innerText = "Llevas " + (patitos.length - restantes.length)
@@ -54,9 +54,25 @@ async function switchPatito(index) {
     if (duck.caught) {
         imagen.src = "duckBN.png"
         await updateDoc(docRef, { caught: false })
+        const patitos = []
+        const querySnapshot = await getDocs(collection(db, "ducks"));
+        querySnapshot.forEach((doc) => {
+            patitos.push(doc.data())
+        });
+        const restantes = patitos.filter(duck => !duck.caught)
+        document.getElementById("restante").innerText = "Te quedan " + restantes.length
+        document.getElementById("llevas").innerText = "Llevas " + (patitos.length - restantes.length)
     } else {
         imagen.src = "duck.png"
         await updateDoc(docRef, { caught: true })
+        const patitos = []
+        const querySnapshot = await getDocs(collection(db, "ducks"));
+        querySnapshot.forEach((doc) => {
+            patitos.push(doc.data())
+        });
+        const restantes = patitos.filter(duck => !duck.caught)
+        document.getElementById("restante").innerText = "Te quedan " + restantes.length
+        document.getElementById("llevas").innerText = "Llevas " + (patitos.length - restantes.length)
     }
 }
 
