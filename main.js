@@ -20,6 +20,8 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app)
 
 document.addEventListener('DOMContentLoaded', async function () {
+    const loader = document.getElementById("loader")
+    loader.hidden = false
     const patitos = []
     const querySnapshot = await getDocs(collection(db, "ducks"));
     querySnapshot.forEach((doc) => {
@@ -37,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             switchPatito(i)
         })
     }
-
+    loader.hidden = true
     const restantes = patitos.filter(duck => !duck.caught)
     if (restantes.length == 0) {
         document.getElementById("felicidades").hidden = false
@@ -56,6 +58,8 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 async function switchPatito(index) {
+    const loader = document.getElementById("loader")
+    loader.hidden = false
     console.log("Switching " + index)
     const docRef = doc(db, "ducks", index + "");
     const docSnap = await getDoc(docRef);
@@ -81,6 +85,7 @@ async function switchPatito(index) {
             document.getElementById("llevas").innerText = "Llevas " + (patitos.length - restantes.length)
             document.getElementById("felicidades").hidden = true
         }
+        loader.hidden = true
     } else {
         imagen.src = "duck.png"
         await updateDoc(docRef, { caught: true })
@@ -99,19 +104,25 @@ async function switchPatito(index) {
             document.getElementById("llevas").innerText = "Llevas " + (patitos.length - restantes.length)
             document.getElementById("felicidades").hidden = true
         }
+        loader.hidden = true
     }
 }
 
 async function selectAll() {
+    const loader = document.getElementById("loader")
+    loader.hidden = false
+    const main = document.querySelector("main")
+    main.innerText = ""
     let patitos = []
     let querySnapshot = await getDocs(collection(db, "ducks"));
     querySnapshot.forEach((doc) => {
         patitos.push(doc.data())
     });
-    patitos.forEach(async (p) => {
+    const promesas = patitos.map(async (p) => {
         const docRef = doc(db, "ducks", p.id + "");
         await updateDoc(docRef, { caught: true })
     })
+    await Promise.all(promesas)
     patitos = []
     querySnapshot = await getDocs(collection(db, "ducks"));
     querySnapshot.forEach((doc) => {
@@ -128,8 +139,7 @@ async function selectAll() {
         document.getElementById("felicidades").hidden = true
     }
 
-    const main = document.querySelector("main")
-    main.innerText = ""
+    
     for (let i = 0; i < patitos.length; i++) {
         if (patitos[i].caught)
             main.insertAdjacentHTML("beforeend", "<div ><p>" + (i + 1) + "</p><button class='circle' id='p" + i + "'><img src='duck.png'></button></div>")
@@ -140,18 +150,25 @@ async function selectAll() {
             switchPatito(i)
         })
     }
+    loader.hidden = true
 }
 
 async function unselectAll() {
+    const loader = document.getElementById("loader")
+    loader.hidden = false
+    const main = document.querySelector("main")
+    main.innerText = ""
     let patitos = []
     let querySnapshot = await getDocs(collection(db, "ducks"));
     querySnapshot.forEach((doc) => {
         patitos.push(doc.data())
     });
-    patitos.forEach(async (p) => {
+    const promesas = patitos.map(async (p) => {
         const docRef = doc(db, "ducks", p.id + "");
         await updateDoc(docRef, { caught: false })
     })
+    await Promise.all(promesas)
+    
     patitos = []
     querySnapshot = await getDocs(collection(db, "ducks"));
     querySnapshot.forEach((doc) => {
@@ -168,8 +185,6 @@ async function unselectAll() {
         document.getElementById("felicidades").hidden = true
     }
 
-    const main = document.querySelector("main")
-    main.innerText = ""
     for (let i = 0; i < patitos.length; i++) {
         if (patitos[i].caught)
             main.insertAdjacentHTML("beforeend", "<div ><p>" + (i + 1) + "</p><button class='circle' id='p" + i + "'><img src='duck.png'></button></div>")
@@ -180,6 +195,7 @@ async function unselectAll() {
             switchPatito(i)
         })
     }
+    loader.hidden = true
 }
 
 // *** SNOW ***
