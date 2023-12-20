@@ -39,8 +39,20 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     const restantes = patitos.filter(duck => !duck.caught)
-    document.getElementById("restante").innerText = "Te quedan " + restantes.length
-    document.getElementById("llevas").innerText = "Llevas " + (patitos.length - restantes.length)
+    if (restantes.length == 0) {
+        document.getElementById("felicidades").hidden = false
+    } else {
+        document.getElementById("restante").innerText = "Te quedan " + restantes.length
+        document.getElementById("llevas").innerText = "Llevas " + (patitos.length - restantes.length)
+        document.getElementById("felicidades").ihidden = true
+    }
+    
+    document.getElementById("btn_select_all").addEventListener('click', function () {
+        selectAll()
+    })
+    document.getElementById("btn_unselect_all").addEventListener('click', function () {
+        unselectAll()
+    })
 });
 
 async function switchPatito(index) {
@@ -60,8 +72,15 @@ async function switchPatito(index) {
             patitos.push(doc.data())
         });
         const restantes = patitos.filter(duck => !duck.caught)
-        document.getElementById("restante").innerText = "Te quedan " + restantes.length
-        document.getElementById("llevas").innerText = "Llevas " + (patitos.length - restantes.length)
+        if (restantes.length == 0) {
+            document.getElementById("felicidades").hidden = false
+            document.getElementById("restante").innerText = ""
+            document.getElementById("llevas").innerText = ""
+        } else {
+            document.getElementById("restante").innerText = "Te quedan " + restantes.length
+            document.getElementById("llevas").innerText = "Llevas " + (patitos.length - restantes.length)
+            document.getElementById("felicidades").hidden = true
+        }
     } else {
         imagen.src = "duck.png"
         await updateDoc(docRef, { caught: true })
@@ -71,8 +90,95 @@ async function switchPatito(index) {
             patitos.push(doc.data())
         });
         const restantes = patitos.filter(duck => !duck.caught)
+        if (restantes.length == 0) {
+            document.getElementById("felicidades").hidden = false
+            document.getElementById("restante").innerText = ""
+            document.getElementById("llevas").innerText = ""
+        } else {
+            document.getElementById("restante").innerText = "Te quedan " + restantes.length
+            document.getElementById("llevas").innerText = "Llevas " + (patitos.length - restantes.length)
+            document.getElementById("felicidades").hidden = true
+        }
+    }
+}
+
+async function selectAll() {
+    let patitos = []
+    let querySnapshot = await getDocs(collection(db, "ducks"));
+    querySnapshot.forEach((doc) => {
+        patitos.push(doc.data())
+    });
+    patitos.forEach(async (p) => {
+        const docRef = doc(db, "ducks", p.id + "");
+        await updateDoc(docRef, { caught: true })
+    })
+    patitos = []
+    querySnapshot = await getDocs(collection(db, "ducks"));
+    querySnapshot.forEach((doc) => {
+        patitos.push(doc.data())
+    });
+    const restantes = patitos.filter(duck => !duck.caught)
+    if (restantes.length == 0) {
+        document.getElementById("felicidades").hidden = false
+        document.getElementById("restante").innerText = ""
+        document.getElementById("llevas").innerText = ""
+    } else {
         document.getElementById("restante").innerText = "Te quedan " + restantes.length
         document.getElementById("llevas").innerText = "Llevas " + (patitos.length - restantes.length)
+        document.getElementById("felicidades").hidden = true
+    }
+
+    const main = document.querySelector("main")
+    main.innerText = ""
+    for (let i = 0; i < patitos.length; i++) {
+        if (patitos[i].caught)
+            main.insertAdjacentHTML("beforeend", "<div ><p>" + (i + 1) + "</p><button class='circle' id='p" + i + "'><img src='duck.png'></button></div>")
+        else
+            main.insertAdjacentHTML("beforeend", "<div ><p>" + (i + 1) + "</p><button class='circle' id='p" + i + "'><img src='duckBN.png'></button></div>")
+
+        document.querySelector("#p" + i).addEventListener('click', function () {
+            switchPatito(i)
+        })
+    }
+}
+
+async function unselectAll() {
+    let patitos = []
+    let querySnapshot = await getDocs(collection(db, "ducks"));
+    querySnapshot.forEach((doc) => {
+        patitos.push(doc.data())
+    });
+    patitos.forEach(async (p) => {
+        const docRef = doc(db, "ducks", p.id + "");
+        await updateDoc(docRef, { caught: false })
+    })
+    patitos = []
+    querySnapshot = await getDocs(collection(db, "ducks"));
+    querySnapshot.forEach((doc) => {
+        patitos.push(doc.data())
+    });
+    const restantes = patitos.filter(duck => !duck.caught)
+    if (restantes.length == 0) {
+        document.getElementById("felicidades").hidden = false
+        document.getElementById("restante").innerText = ""
+        document.getElementById("llevas").innerText = ""
+    } else {
+        document.getElementById("restante").innerText = "Te quedan " + restantes.length
+        document.getElementById("llevas").innerText = "Llevas " + (patitos.length - restantes.length)
+        document.getElementById("felicidades").hidden = true
+    }
+
+    const main = document.querySelector("main")
+    main.innerText = ""
+    for (let i = 0; i < patitos.length; i++) {
+        if (patitos[i].caught)
+            main.insertAdjacentHTML("beforeend", "<div ><p>" + (i + 1) + "</p><button class='circle' id='p" + i + "'><img src='duck.png'></button></div>")
+        else
+            main.insertAdjacentHTML("beforeend", "<div ><p>" + (i + 1) + "</p><button class='circle' id='p" + i + "'><img src='duckBN.png'></button></div>")
+
+        document.querySelector("#p" + i).addEventListener('click', function () {
+            switchPatito(i)
+        })
     }
 }
 
